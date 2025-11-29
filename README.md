@@ -1,206 +1,112 @@
-# IMT-222_BarBot
- 1. Descripción General
+<div align="center">
+🍹 BarBot – Sistema Automatizado de Preparación de Bebidas
+ESP32 • FreeRTOS • FSM • LCD I²C • Servo • Motor DC
+<img src="img/banner_barbot.png" width="90%"> </div>
+🧠 1. ¿Qué es BarBot?
 
-BarBot es un sistema automatizado capaz de preparar bebidas mezcladas utilizando un carrusel motorizado, sensores de posición, un servo presionador y una interfaz de usuario basada en LCD y botones. El sistema está desarrollado sobre un ESP32, estructurado con FreeRTOS, programado en C++ modular y controlado mediante una Máquina de Estados Finita (FSM).
+BarBot es un sistema embebido capaz de preparar bebidas mezcladas de manera automática, precisa y controlada.
+Utiliza un carrusel de 6 botellas, sensores de posición, un servo presionador, un motor DC tipo limpiaparabrisas y una interfaz simple basada en LCD I²C y botones.
 
-El proyecto integra los principales conceptos vistos en la materia Sistemas Embebidos I, incluyendo:
+<div align="center"> <img src="img/barbot_render.png" width="70%"> </div>
 
-Control de actuadores
+El cerebro del sistema es un ESP32 ejecutando FreeRTOS, mientras una FSM (Finite State Machine) organiza todo el flujo de decisiones.
 
-Sensores digitales
+🧩 2. Arquitectura General del Sistema
+<div align="center"> <img src="img/arquitectura_barbot.png" width="85%"> </div>
 
-Comunicación I²C
+La arquitectura incluye:
 
-FreeRTOS y multitarea
+Entradas → Botones, HOME, SLOT
 
-Diseño FSM
+Procesamiento → ESP32 + FSM + FreeRTOS
 
-Antirrebote de botones
+Actuadores → Motor DC y Servo
 
-Modularización en .cpp / .h
+Interfaz → LCD 16x2 I²C
 
-Integración hardware–software
+Recetas → Lógica 70% / 30%
 
-Documentación profesional
+🔄 3. Diagrama de Estados (FSM)
+<div align="center"> <img src="img/fsm_diagrama.png" width="80%"> </div>
 
- 2. Objetivo del Proyecto
+Estados principales:
 
-Diseñar e implementar un sistema embebido capaz de seleccionar, mover, posicionar y dispensar dos líquidos diferentes para formar bebidas mezcladas (ej. Ron + Cola, Vodka + Sprite), manteniendo proporciones definidas (70% mezclador, 30% alcohol).
+ST_IDLE – Espera inicial
 
-3. Objetivos Específicos
+ST_BOOT – Inicialización
 
-Implementar una máquina de estados (FSM) que controle el flujo completo del sistema.
+ST_HOME – Homing del carrusel
 
-Controlar un motor DC mediante finales de carrera para posicionar un carrusel rotatorio.
+ST_MENU – Selección de bebida
 
-Servir líquidos mediante un servo accionado por pulsos PWM precisos.
+ST_MOVE1 – Ir a botella 1
 
-Diseñar un sistema de navegación por menú con botones + LCD I²C.
+ST_DISPENSE1 – Servir alcohol (30%)
 
-Implementar antirrebote por software usando técnicas vistas en clase.
+ST_MOVE2 – Ir a botella 2
 
-Desarrollar el sistema usando FreeRTOS para garantizar concurrencia estable.
+ST_DISPENSE2 – Servir mezclador (70%)
 
-Modularizar el software siguiendo buenas prácticas de ingeniería.
+ST_DONE – Trago completado
 
-Documentar arquitectura, diagramas y flujo del sistema.
+🧱 4. Diagrama de Bloques Funcional
+<div align="center"> <img src="img/diagrama_bloques.png" width="85%"> </div>
 
- 4. Arquitectura General del Sistema
+Este diagrama muestra la relación:
 
-La arquitectura del BarBot se divide en cinco capas:
+Sensores → FSM → Actuadores
 
-1. Capa de Entrada
+FSM → LCD → Usuario
 
-Botones: UP, DOWN y OK (cambiaron recetas y confirman selección).
+Recetas → Control → Servo + Motor
 
-Final de carrera HOME → marca posición cero del carrusel.
+⚙️ 5. Funcionamiento General del Sistema
+<div align="center"> <img src="img/flujo_general.png" width="85%"> </div>
 
-Final de carrera SLOT → detecta cada botella (6 posiciones).
+Etapas:
 
-2. Capa de Procesamiento
+Encendido
 
-ESP32 + FreeRTOS
+Homing automático
 
-Máquina de Estados (FSM)
+Menú de bebidas
 
-Timers basados en millis()
+Movimiento a botella 1
 
-Antirrebote por software
+Servido 1
 
-Lógica de recetas (proporciones 30–70)
+Movimiento a botella 2
 
-3. Capa de Control
+Servido 2
 
-Cálculo de movimiento del motor
+“TRAGO LISTO”
 
-Conteo de posiciones
+🛠️ 6. Materiales Utilizados
+<div align="center"> <img src="img/materiales.png" width="75%"> </div>
+Componente	Función
+ESP32 DevKit	Control y procesamiento
+Pantalla LCD I²C	Menú y estado del sistema
+Servo SG90 / MG996R	Presionar dispensador
+Motor DC tipo limpiaparabrisas	Rotación del carrusel
+Final de carrera HOME	Posición cero
+Final de carrera SLOT	Conteo de posiciones
+Botones UP/DOWN/OK	Navegación por menú
+Dispensadores tipo botellón	Salida de líquidos
+Estructura mecánica	Carrusel y soporte
+⏱️ 7. Lógica 70% / 30% (Tiempo de Servido)
+<div align="center"> <img src="img/servo_servicio.png" width="70%"> </div>
 
-Control de servo mediante pulsos
+Para cada receta se define:
 
-Control no bloqueante (RTOS)
+bottlePos1 → botella de alcohol
 
-4. Capa de Actuadores
+pourMs1 → tiempo de alcohol (≈ 30%)
 
-Motor DC tipo limpiaparabrisas (giro constante).
+bottlePos2 → botella de mezclador
 
-Servo SG90 / MG996R para presionar dispensador.
+pourMs2 → tiempo de mezclador (≈ 70%)
 
-5. Capa de Salida
-
-LCD 16×2 I²C
-
-Indicación de estado actual
-
-“Trago listo”
-
-Movimientos, selección y mensajes de homing
-
-5. Materiales
-Electrónica
-
-ESP32 DevKit 30 pines
-
-Pantalla LCD 16×2 con módulo I²C
-
-Servo SG90 o MG996R
-
-Motor DC tipo limpiaparabrisas
-
-Driver de motor (L298N o MOSFET + diodos)
-
-2 finales de carrera
-
-3 botones (UP, DOWN, OK)
-
-Fuente 5V/3A (servo + motor)
-
-Fuente 12V (motor)
-
-Regulador 5V → 3.3V (si se requiere)
-
-Mecánica
-
-Carrusel para 6 botellas
-
-Dispensadores tipo botellón
-
-Acoples para servo
-
-Estructura impresa o fabricada
-
-Vasos de prueba
-
-6. Descripción Completa de la FSM
-
-La FSM controla todo el flujo del BarBot:
-
-ST_IDLE
-
-Sistema inicial sin operación.
-
-ST_BOOT
-
-Inicialización de hardware, LCD, servo y variables.
-
-ST_HOME
-
-Movimiento del carrusel hasta encontrar HOME.
-Define currentPos = 0.
-
-ST_MENU
-
-Selección de bebida con UP/DOWN.
-Confirmación con OK.
-
-ST_MOVE1
-
-Mover carrusel hasta bottlePos1 (alcohol).
-Usa flancos del sensor SLOT.
-
-ST_DISPENSE1
-
-Accionar servo durante pourMs1.
-Sirve el 30% del volumen total.
-
-ST_MOVE2
-
-Mover carrusel a bottlePos2 (mezclador).
-
-ST_DISPENSE2
-
-Accionar servo durante pourMs2.
-Sirve el 70% del volumen.
-
-ST_DONE
-
-Mensaje “Trago listo”.
-Retorna a menú.
-
-7. Flujo del Sistema (Paso a Paso)
-
-El usuario enciende el BarBot.
-
-El sistema hace homing para encontrar posición 0.
-
-Se muestra el menú de bebidas.
-
-El usuario selecciona una receta.
-
-El carrusel se mueve a la botella del alcohol.
-
-El servo presiona el dispensador durante un tiempo calculado.
-
-El carrusel se mueve a la segunda botella.
-
-El servo presiona nuevamente (70%).
-
-Se muestra “Trago listo”.
-
-El usuario vuelve al menú.
-
-8. Lógica de Mezcla 70/30
-
-Suponiendo un caudal constante:
+Cálculo:
 
 𝑉
 =
@@ -209,94 +115,104 @@ Suponiendo un caudal constante:
 𝑡
 V=Q⋅t
 
-Alcohol: 30% del total
+Esto hace que cambiar proporciones sea tan simple como editar recipes.cpp.
 
-Mezclador: 70%
+🧵 8. FreeRTOS y Multitarea
+<div align="center"> <img src="img/freertos_diagrama.png" width="80%"> </div>
+Tareas creadas
+TaskBarbot (10 ms)
 
-Por eso:
+Ejecuta fsmStep()
 
-pourMs1 → tiempo del alcohol
+Evalúa sensores
 
-pourMs2 → tiempo del mezclador
+Controla motor
 
-Esto puede recalibrarse fácilmente cambiando valores en recipes.cpp.
-
-9. FreeRTOS y Tareas
-
-Se usan dos tareas:
-
-TaskBarbot
-
-Ejecuta fsmStep() cada 10 ms
-
-Procesa sensores
-
-Actualiza estado
-
-Controla motor y servo
+Controla servo
 
 TaskHeartbeat
 
-Mantiene un LED parpadeando
+Parpadeo del LED
 
-Indica que el sistema está vivo
+Indica vida del sistema
 
-Ayuda al debug entre fallos
+Gracias a FreeRTOS → Zero bloqueos / multitarea real.
 
- 10. Modularización del Código
-src/
-  - BarBot_FreeRTOS.ino
-  - fsm.cpp
-  - hardware.cpp
-  - buttons.cpp
-  - recipes.cpp
+🧱 9. Modularización del Código
+BarBot/
+ ├── src/
+ │    ├── BarBot_FreeRTOS.ino
+ │    ├── fsm.cpp
+ │    ├── hardware.cpp
+ │    ├── buttons.cpp
+ │    └── recipes.cpp
+ ├── inc/
+ │    ├── fsm.h
+ │    ├── hardware.h
+ │    ├── buttons.h
+ │    └── recipes.h
+ ├── img/
+ ├── docs/
+ └── README.md
 
-inc/
-  - fsm.h
-  - hardware.h
-  - buttons.h
-  - recipes.h
 
-Beneficios:
+Ventajas:
 
-✔ código mantenible
-✔ fácil lectura
-✔ escalable
-✔ profesional
-✔ perfecto para presentaciones
+✔ Claridad
+✔ Escalabilidad
+✔ Trabajo en equipo
+✔ Profesionalismo
 
-11. Pruebas Realizadas
+🧪 10. Pruebas Realizadas
+Homing correcto
 
-Validación de sensores
+Conteo con SLOT estable
 
-Validación de motor + flancos
+Servo calibrado
 
-Prueba del servo con dispensadores
-
-Ajuste de proporciones
+Tiempo de mezclas verificado
 
 Simulación en Wokwi
 
- 12. Estado Actual del Proyecto
-Casi completo
+Configuración de recetas
 
-✔ FSM funcional
-✔ Menú con antirrebote
-✔ Recetas configurables
-✔ FreeRTOS integrado
-✔ Simulación estable
-✔ Documentación IEEE
-✔ Diagramas
+Integración de FreeRTOS
 
-Pendiente
+Menú con antirrebote
 
-🔲 Montaje final del prototipo
-🔲 Calibración de tiempos reales
-🔲 Diseño mecánico definitivo
+📊 11. Estado Actual del Proyecto
+✔ Semicompletado
 
-13. Conclusiones
+FSM funcionando
 
-BarBot demuestra la integración total de conceptos de sistemas embebidos, incluyendo:
+FreeRTOS integrado
+
+Control de motor y servo
+
+Antirrebote implementado
+
+Recetas configurables
+
+Simulación funcional
+
+
+Documentación IEEE
+
+README visual
+
+⏳ Pendiente
+
+Carcasa final
+
+Ajuste del caudal real
+
+Diagramas completos
+
+Ensamblaje mecánico completo
+
+🏁 12. Conclusiones
+
+BarBot integra todos los conceptos clave de la materia:
 
 Sensado
 
@@ -304,19 +220,23 @@ Actuación
 
 Control
 
-Programación modular
-
 RTOS
 
-Diseño FSM
+FSM
 
-Interacción humano–máquina (HMI)
+Modularización
 
-El proyecto es escalable, robusto, educativo y perfectamente justificable como dominio de la materia.
+Comunicación I²C
 
-14. Autores
+Diseño embebido 
 
-Susann Bladiviezo-validación de códigos .h
-Florencia Frigero-Validación de códigos.h e .ino
-Benjamín Soruco-Simulación en KiCad
-Alejandro Bejarano-Diseño mecánico y documentación
+
+👤 13. Autores
+
+Susann Baldiviezo – Lógica FSM
+
+Florencia  Frigerio– Control del motor + validación de códigos
+
+Benjamín Soruco – Servo + mecánica
+
+Alejandro Bejarano – Documentación
