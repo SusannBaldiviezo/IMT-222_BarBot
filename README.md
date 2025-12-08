@@ -1,242 +1,163 @@
-<div align="center">
-🍹 BarBot – Sistema Automatizado de Preparación de Bebidas
-ESP32 • FreeRTOS • FSM • LCD I²C • Servo • Motor DC
-<img src="img/banner_barbot.png" width="90%"> </div>
-🧠 1. ¿Qué es BarBot?
+🥤 BarBot – Sistema Automatizado de Preparación de Bebidas (ESP32 + FreeRTOS + Control + FSM)
+📌 Descripción general del proyecto
 
-BarBot es un sistema embebido capaz de preparar bebidas mezcladas de manera automática, precisa y controlada.
-Utiliza un carrusel de 6 botellas, sensores de posición, un servo presionador, un motor DC tipo limpiaparabrisas y una interfaz simple basada en LCD I²C y botones.
+BarBot es un sistema embebido desarrollado con ESP32 que automatiza la selección, posicionamiento y dispensado de bebidas utilizando servos, motor DC y una máquina de estados finita (FSM).
+La gestión temporal del sistema se organiza mediante FreeRTOS, logrando un funcionamiento estable, modular y sin bloqueos.
 
-<div align="center"> <img src="img/barbot_render.png" width="70%"> </div>
+El proyecto es parte del desarrollo académico de la Universidad Católica Boliviana (UCB – Tarija), integrando conceptos de Sistemas Embebidos, Control I, FreeRTOS, y Arquitectura modular basada en tareas.
 
-El cerebro del sistema es un ESP32 ejecutando FreeRTOS, mientras una FSM (Finite State Machine) organiza todo el flujo de decisiones.
+🧩 Objetivos del proyecto
+🎯 General
 
-🧩 2. Arquitectura General del Sistema
-<div align="center"> <img src="img/arquitectura_barbot.png" width="85%"> </div>
+Desarrollar un prototipo funcional capaz de preparar bebidas automáticamente, integrando control de actuadores, manejo de tareas y organización modular del software.
 
-La arquitectura incluye:
+🎯 Específicos
 
-Entradas → Botones, HOME, SLOT
+Implementar control básico de posición de servos y motor.
 
-Procesamiento → ESP32 + FSM + FreeRTOS
+Diseñar una máquina de estados (FSM) para gestionar el flujo del BarBot.
 
-Actuadores → Motor DC y Servo
+Integrar FreeRTOS para tareas concurrentes.
 
-Interfaz → LCD 16x2 I²C
+Organizar el código de forma modular (src, inc, docs, img).
 
-Recetas → Lógica 70% / 30%
+Desarrollar recetas configurables.
 
-🔄 3. Diagrama de Estados (FSM)
-<div align="center"> <img src="img/fsm_diagrama.png" width="80%"> </div>
+Presentar el avance del proyecto con fundamentos de control, embebidos y buenas prácticas.
 
-Estados principales:
+⚙️ Características principales
 
-ST_IDLE – Espera inicial
+Microcontrolador: ESP32
 
-ST_BOOT – Inicialización
+Sistema operativo: FreeRTOS
 
-ST_HOME – Homing del carrusel
+Arquitectura:
 
-ST_MENU – Selección de bebida
+Máquina de estados (FSM)
 
-ST_MOVE1 – Ir a botella 1
+Tareas concurrentes
 
-ST_DISPENSE1 – Servir alcohol (30%)
+Código modular por componentes
 
-ST_MOVE2 – Ir a botella 2
+Actuadores:
 
-ST_DISPENSE2 – Servir mezclador (70%)
+Servo de giro
 
-ST_DONE – Trago completado
+Servo de dispensado
 
-🧱 4. Diagrama de Bloques Funcional
-<div align="center"> <img src="img/diagrama_bloques.png" width="85%"> </div>
+Servo de entrega (servicio)
 
-Este diagrama muestra la relación:
+Motor DC para carrusel
 
-Sensores → FSM → Actuadores
+Interfaz:
 
-FSM → LCD → Usuario
+Botones (UP / DOWN / OK)
 
-Recetas → Control → Servo + Motor
+LCD I2C
 
-⚙️ 5. Funcionamiento General del Sistema
-<div align="center"> <img src="img/flujo_general.png" width="85%"> </div>
-
-Etapas:
-
-Encendido
-
-Homing automático
-
-Menú de bebidas
-
-Movimiento a botella 1
-
-Servido 1
-
-Movimiento a botella 2
-
-Servido 2
-
-“TRAGO LISTO”
-
-🛠️ 6. Materiales Utilizados
-<div align="center"> <img src="img/materiales.png" width="75%"> </div>
-Componente	Función
-ESP32 DevKit	Control y procesamiento
-Pantalla LCD I²C	Menú y estado del sistema
-Servo SG90 / MG996R	Presionar dispensador
-Motor DC tipo limpiaparabrisas	Rotación del carrusel
-Final de carrera HOME	Posición cero
-Final de carrera SLOT	Conteo de posiciones
-Botones UP/DOWN/OK	Navegación por menú
-Dispensadores tipo botellón	Salida de líquidos
-Estructura mecánica	Carrusel y soporte
-⏱️ 7. Lógica 70% / 30% (Tiempo de Servido)
-<div align="center"> <img src="img/servo_servicio.png" width="70%"> </div>
-
-Para cada receta se define:
-
-bottlePos1 → botella de alcohol
-
-pourMs1 → tiempo de alcohol (≈ 30%)
-
-bottlePos2 → botella de mezclador
-
-pourMs2 → tiempo de mezclador (≈ 70%)
-
-Cálculo:
-
-𝑉
-=
-𝑄
-⋅
-𝑡
-V=Q⋅t
-
-Esto hace que cambiar proporciones sea tan simple como editar recipes.cpp.
-
-🧵 8. FreeRTOS y Multitarea
-<div align="center"> <img src="img/freertos_diagrama.png" width="80%"> </div>
-Tareas creadas
-TaskBarbot (10 ms)
-
-Ejecuta fsmStep()
-
-Evalúa sensores
-
-Controla motor
-
-Controla servo
-
-TaskHeartbeat
-
-Parpadeo del LED
-
-Indica vida del sistema
-
-Gracias a FreeRTOS → Zero bloqueos / multitarea real.
-
-🧱 9. Modularización del Código
-BarBot/
- ├── src/
- │    ├── BarBot_FreeRTOS.ino
- │    ├── fsm.cpp
- │    ├── hardware.cpp
- │    ├── buttons.cpp
- │    └── recipes.cpp
- ├── inc/
- │    ├── fsm.h
- │    ├── hardware.h
- │    ├── buttons.h
- │    └── recipes.h
- ├── img/
- ├── docs/
- └── README.md
-
-
-Ventajas:
-
-✔ Claridad
-✔ Escalabilidad
-✔ Trabajo en equipo
-✔ Profesionalismo
-
-🧪 10. Pruebas Realizadas
-Homing correcto
-
-Conteo con SLOT estable
-
-Servo calibrado
-
-Tiempo de mezclas verificado
-
-Simulación en Wokwi
-
-Configuración de recetas
-
-Integración de FreeRTOS
-
-Menú con antirrebote
-
-📊 11. Estado Actual del Proyecto
-✔ Semicompletado
-
-FSM funcionando
-
-FreeRTOS integrado
-
-Control de motor y servo
-
-Antirrebote implementado
+LED Heartbeat
 
 Recetas configurables
 
-Simulación funcional
+Control básico proporcional (Control I)
+
+🛠️ Estructura del repositorio
+IMT-222_BarBot/
+│
+├── src/              → Código fuente (.cpp)
+├── inc/              → Headers (.h)
+├── docs/             → Documentos, informes, diagramas
+├── img/              → Imágenes y recursos
+├── README.md         → Este archivo
+└── .gitignore
+
+🧠 Arquitectura del software
+
+El sistema está dividido en módulos independientes:
+
+Módulo	Función principal
+FSM	Control de estados del BarBot (MENU, SERVING, DONE)
+Hardware	Control de servos, motor, LCD, botones
+Buttons	Manejo de entradas + antirrebote
+Recipes	Base de datos de recetas y tiempos
+FreeRTOS	Gestión de tareas concurrentes
+Main	Inicialización del sistema y tareas FreeRTOS
+🧵 Tareas en FreeRTOS
+
+El sistema usa dos tareas principales:
+
+🟦 TaskBarbot
+
+Prioridad: 1
+
+Periodo: 50 ms
+
+Ejecuta la FSM
+
+Maneja servos, recetas y botones
+
+Controla todo el flujo del BarBot
+
+🟩 TaskHeartbeat
+
+Prioridad: 0
+
+Periodo: 500 ms
+
+Parpadeo del LED
+
+Indica que el sistema está vivo
+
+El loop() queda vacío, FreeRTOS controla todo el flujo.
+
+🧩 Máquina de estados (FSM)
+Estados principales:
+
+MENU: selección de recetas
+
+SERVING: giro, posicionamiento y dispensado
+
+DONE: espera confirmación para volver al menú
+
+Cada estado ejecuta una parte lógica del sistema, manteniendo el código limpio y modular.
+
+🔧 Control aplicado (Control I)
+Modelo del servo
+
+Aproximado como primer orden:
+
+G(s) = K / (τs + 1)
+K = 1
+τ ≈ 0.15 s
+
+Control utilizado
+
+Control Proporcional (P):
+
+u(t) = Kp (r - y)
 
 
-Documentación IEEE
+Aplicado para movimientos suaves y estables.
 
-README visual
+📈 Avance actual del proyecto
+Componente	Estado
+Control de servos	✔️ Completo
+Control del motor DC	✔️ Completo (open-loop calibrado)
+FSM funcional	✔️ Completo
+FreeRTOS	✔️ Completo
+Organización modular	✔️ Completa
+README	✔️ Actualizado
+Documentación técnica	🔄 En progreso
+Ensamblado mecánico	🔄 En progreso
+Simulación y control	✔️ Aplicado (Control I)
+📌 Conclusiones
 
-⏳ Pendiente
+El BarBot cumple con los principios fundamentales de un sistema embebido bien estructurado.
 
-Carcasa final
+FreeRTOS permite separar el sistema en tareas estables y no bloqueantes.
 
-Ajuste del caudal real
+La máquina de estados simplifica la lógica de operación y permite escalabilidad.
 
-Diagramas completos
+El sistema de control aplicado (servo/motor) refleja correctamente los contenidos teóricos de Control I.
 
-Ensamblaje mecánico completo
-
-🏁 12. Conclusiones
-
-BarBot integra todos los conceptos clave de la materia:
-
-Sensado
-
-Actuación
-
-Control
-
-RTOS
-
-FSM
-
-Modularización
-
-Comunicación I²C
-
-Diseño embebido 
-
-
-👤 13. Autores
-
-Susann Baldiviezo – Lógica FSM
-
-Florencia  Frigerio– Control del motor + validación de códigos
-
-Benjamín Soruco – Servo + mecánica
-
-Alejandro Bejarano – Documentación
+El proyecto está en una etapa sólida para seguir avanzando y agregar características como WiFi, calibración automática, telemetría o más recetas.
