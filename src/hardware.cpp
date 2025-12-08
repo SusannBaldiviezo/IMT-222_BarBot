@@ -1,113 +1,118 @@
-
 #include "hardware.h"
-#include <Arduino.h>
-#include <Wire.h>
 
-// ---- Definición de pines ----
-const uint8_t PIN_SERVO         = 18;
-const uint8_t PIN_MOTOR         = 19;
-const uint8_t PIN_HOME          = 4;
-const uint8_t PIN_SLOT          = 5;
-const uint8_t PIN_BTN_UP        = 12;
-const uint8_t PIN_BTN_DOWN      = 14;
-const uint8_t PIN_BTN_OK        = 27;
-const uint8_t PIN_LED_HEARTBEAT = 2;   // LED onboard o LED externo
+// ============ DEFINICIÓN DE PINES ============
+const uint8_t PIN_MOTOR_REN  = 25;
+const uint8_t PIN_MOTOR_LEN  = 26;
+const uint8_t PIN_MOTOR_RPWM = 27;
+const uint8_t PIN_MOTOR_LPWM = 14;
 
-// Ángulos del servo “lógico”
-const int SERVO_REST_ANGLE  = 20;
-const int SERVO_PRESS_ANGLE = 110;
+// SOLO 2 SENSORES
+const uint8_t PIN_HOME    = 15;  // Sensor HOME
+const uint8_t PIN_COUNTER = 32;  // Sensor CONTADOR
 
+const uint8_t PIN_SERVO  = 5;
+const int SERVO_REST_ANGLE     = 0;
+const int SERVO_DISPENSE_ANGLE = 90;
+
+const uint8_t PIN_BTN_UP   = 12;
+const uint8_t PIN_BTN_DOWN = 13;
+const uint8_t PIN_BTN_OK   = 4;
+
+const uint8_t PIN_LED_HEARTBEAT = 19;
 // LCD I2C
-LiquidCrystal_I2C lcd(0x27, 16, 2);
+const uint8_t LCD_SDA = 21;  // GPIO 21 para SDA (común)
+const uint8_t LCD_SCL = 22;  // GPIO 22 para SCL (común)
 
-// Botones globales
+// ============ BOTONES GLOBALES ============
 Button btnUp;
 Button btnDown;
 Button btnOk;
 
-// =================== SERVO (pulsos manuales tipo RC) ===================
-//
-// El servo de Wokwi (y uno real) espera pulsos de:
-//   - ~500 us  → 0°
-//   - ~1500 us → 90°
-//   - ~2400 us → 180°
-// repetidos cada 20 ms.
-// Aquí generamos ~25 pulsos cada vez que cambiamos de ángulo,
-// suficiente para que el servo se mueva en la simulación.
-//
-
-void servoInit() {
-  pinMode(PIN_SERVO, OUTPUT);
-  servoSetAngle(SERVO_REST_ANGLE);  // posición inicial de reposo
-}
-
-void servoSetAngle(int angle) {
-  if (angle < 0)   angle = 0;
-  if (angle > 180) angle = 180;
-
-  // 0° -> 500 us, 180° -> 2400 us
-  uint16_t pulseUs = map(angle, 0, 180, 500, 2400);
-
-  // Enviar ~25 pulsos (≈0.5 s) para que el servo llegue a la posición
-  for (int i = 0; i < 25; i++) {
-    digitalWrite(PIN_SERVO, HIGH);
-    delayMicroseconds(pulseUs);
-    digitalWrite(PIN_SERVO, LOW);
-    delayMicroseconds(20000 - pulseUs);  // periodo total 20 ms
-  }
-}
-
-// =================== INICIALIZACIÓN DE HARDWARE ===================
-
+// ============ INICIALIZACIÓN ============
 void hardwareInit() {
-  Wire.begin();
+  Serial.begin(115200);
+  Serial.println("Inicializando hardware ");
+  // Inicializar I2C para LCD
+  Wire.begin(LCD_SDA, LCD_SCL);
+  delay(100);
 
-  lcd.init();
-  lcd.backlight();
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("BarBot IMT");
-  lcd.setCursor(0, 1);
-  lcd.print("Iniciando...");
+  // BTS7960 - Motor
+  pinMode(PIN_MOTOR_REN, OUTPUT);
+  pinMode(PIN_MOTOR_LEN, OUTPUT);
+  digitalWrite(PIN_MOTOR_REN, HIGH);  // Habilitar derecha
+  digitalWrite(PIN_MOTOR_LEN, HIGH);  // Habilitar izquierda
+
+  ledcAttach(PIN_MOTOR_RPWM, 1000, 8);  // 1kHz, 8 bits
+  ledcAttach(PIN_MOTOR_LPWM, 1000, 8);
+  motorStop();
+
+  // FINALES DE CARRERA (SOLO 2)
+  // INPUT_PULLUP: Activo en LOW (sensor presionado)
+  pinMode(PIN_HOME, INPUT_PULLUP);     // HOME en GPIO 15
+  pinMode(PIN_COUNTER, INPUT_PULLUP);  // CONTADOR en GPIO 32
 
   // Servo
   servoInit();
 
-  // Motor del carrusel
-  pinMode(PIN_MOTOR, OUTPUT);
-  digitalWrite(PIN_MOTOR, LOW);
-
-  // Finales de carrera
-  pinMode(PIN_HOME, INPUT_PULLUP);
-  pinMode(PIN_SLOT, INPUT_PULLUP);
-
-  // Botones con antirrebote
+  // Botones
   initButton(btnUp,   PIN_BTN_UP);
   initButton(btnDown, PIN_BTN_DOWN);
   initButton(btnOk,   PIN_BTN_OK);
 
-  // LED heartbeat (tarea FreeRTOS)
+  // LED
   pinMode(PIN_LED_HEARTBEAT, OUTPUT);
+
+  Serial.println("Hardware inicializado OK (2 sensores)");
 }
 
-// =================== MOTOR ===================
-
-void motorOn() {
-  digitalWrite(PIN_MOTOR, HIGH);
+// ============ MOTOR ============
+void motorRight(uint8_t speed) {
+  speed = constrain(speed, 0, 255);
+  ledcWrite(PIN_MOTOR_RPWM, speed);
+  ledcWrite(PIN_MOTOR_LPWM, 0);
 }
 
-void motorOff() {
-  digitalWrite(PIN_MOTOR, LOW);
+void motorLeft(uint8_t speed) {
+  speed = constrain(speed, 0, 255);
+  ledcWrite(PIN_MOTOR_RPWM, 0);
+  ledcWrite(PIN_MOTOR_LPWM, speed);
 }
 
-// =================== FINALES DE CARRERA ===================
+void motorStop() {
+  ledcWrite(PIN_MOTOR_RPWM, 0);
+  ledcWrite(PIN_MOTOR_LPWM, 0);
+}
 
+// ============ FINALES DE CARRERA (2 SENSORES) ============
 bool readLimitHome() {
-  // Activo en LOW (por INPUT_PULLUP)
-  return digitalRead(PIN_HOME) == LOW;
+  return digitalRead(PIN_HOME) == LOW;  // Activo en LOW
 }
 
-bool readLimitSlot() {
-  // Activo en LOW (por INPUT_PULLUP)
-  return digitalRead(PIN_SLOT) == LOW;
+bool readLimitPos() {
+  // Lee el sensor CONTADOR (único para todas las posiciones)
+  return digitalRead(PIN_COUNTER) == LOW;  // Activo en LOW
+}
+
+
+
+
+// ============ SERVO ============
+void servoInit() {
+  pinMode(PIN_SERVO, OUTPUT);
+  servoSetAngle(SERVO_REST_ANGLE);
+}
+
+void servoSetAngle(int angle) {
+  angle = constrain(angle, 0, 180);
+  
+  // Mapeo: 0° = 500us, 90° = 1500us, 180° = 2400us
+  uint16_t pulseUs = map(angle, 0, 180, 500, 2400);
+
+  // Enviar 25 pulsos para que el servo se posicione
+  for (int i = 0; i < 25; i++) {
+    digitalWrite(PIN_SERVO, HIGH);
+    delayMicroseconds(pulseUs);
+    digitalWrite(PIN_SERVO, LOW);
+    delayMicroseconds(20000 - pulseUs);
+  }
 }
