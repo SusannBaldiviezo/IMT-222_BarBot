@@ -2,43 +2,54 @@
 #define HARDWARE_H
 
 #include <Arduino.h>
-#include <LiquidCrystal_I2C.h>
+#include <Wire.h>        // ¡AGREGAR ESTO!
 #include "buttons.h"
 
-// ---- Pines (pensados para ESP32 30 pines en Wokwi/real) ----
+// ============ PINES BTS7960 (Motor) ============
+extern const uint8_t PIN_MOTOR_REN;   // Enable derecha
+extern const uint8_t PIN_MOTOR_LEN;   // Enable izquierda
+extern const uint8_t PIN_MOTOR_RPWM;  // PWM derecha
+extern const uint8_t PIN_MOTOR_LPWM;  // PWM izquierda
+
+// ============ FINALES DE CARRERA (SOLO 2) ============
+extern const uint8_t PIN_HOME;        // Posición 0 (HOME)
+extern const uint8_t PIN_COUNTER;     // Contador de botellas (1-6)
+
+// ============ SERVO ============
 extern const uint8_t PIN_SERVO;
-extern const uint8_t PIN_MOTOR;
-extern const uint8_t PIN_HOME;
-extern const uint8_t PIN_SLOT;
+extern const int SERVO_REST_ANGLE;    // Ángulo reposo (0°)
+extern const int SERVO_DISPENSE_ANGLE; // Ángulo dispensar (90°)
+
+// ============ BOTONES ============
 extern const uint8_t PIN_BTN_UP;
 extern const uint8_t PIN_BTN_DOWN;
 extern const uint8_t PIN_BTN_OK;
+
+// ============ LED ============
 extern const uint8_t PIN_LED_HEARTBEAT;
 
-// Ángulos del “servo lógico”
-extern const int SERVO_REST_ANGLE;
-extern const int SERVO_PRESS_ANGLE;
+// ============ LCD I2C ============
+extern const uint8_t LCD_SDA;
+extern const uint8_t LCD_SCL;
 
-// LCD global
-extern LiquidCrystal_I2C lcd;
-
-// Botones globales
+// ============ VARIABLES GLOBALES ============
 extern Button btnUp;
 extern Button btnDown;
 extern Button btnOk;
 
-// Inicialización completa de hardware
+// ============ FUNCIONES ============
 void hardwareInit();
 
-// Motor carrusel
-void motorOn();
-void motorOff();
+// Motor
+void motorRight(uint8_t speed);  // Girar derecha (0-255)
+void motorLeft(uint8_t speed);   // Girar izquierda (0-255)
+void motorStop();                // Detener motor
 
-// Finales de carrera
-bool readLimitHome();
-bool readLimitSlot();
+// Finales de carrera (2 sensores)
+bool readLimitHome();            // Leer HOME
+bool readLimitPos();             // Leer CONTADOR (único para todas las posiciones)
 
-// Servo manejado por PWM (sin librería Servo)
+// Servo
 void servoInit();
 void servoSetAngle(int angle);
 
