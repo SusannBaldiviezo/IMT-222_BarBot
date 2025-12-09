@@ -313,7 +313,7 @@ void taskSystemSupervisor(void *pvParameters) {
         
         // Botón RESET siempre funciona
         if (btnEvent.buttonId == 4) { // RESET
-          Serial.println("🔄 Reset del sistema");
+          Serial.println(" Reset del sistema");
           
           motorCmd.command = 3; // STOP
           xQueueSend(motorCommandQueue, &motorCmd, 0);
@@ -338,7 +338,7 @@ void taskSystemSupervisor(void *pvParameters) {
 
 // ============ INICIALIZACIÓN DE TAREAS ============
 void tasksInit() {
-  Serial.println("🎯 Inicializando FreeRTOS tasks...");
+  Serial.println("Inicializando FreeRTOS tasks...");
   
   // Crear mutex para LCD
   lcdMutex = xSemaphoreCreateMutex();
@@ -389,5 +389,5 @@ void tasksInit() {
     0
   );
   
-  Serial.println("✅ Tasks de FreeRTOS creadas exitosamente");
+  Serial.println("Tasks de FreeRTOS creadas exitosamente");
 }
