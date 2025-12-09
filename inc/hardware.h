@@ -26,20 +26,20 @@ extern const uint8_t PIN_BTN_DOWN;
 extern const uint8_t PIN_BTN_OK;
 extern const uint8_t PIN_BTN_RESET;
 
-// ============ RELÉ (FOCO 220V) ============
+// RELÉ (FOCO 220V) 
 extern const uint8_t PIN_RELE_FOCO;
 
-// ============ LCD I2C ============
+//  LCD I2C
 extern const uint8_t LCD_SDA;
 extern const uint8_t LCD_SCL;
 
-// ============ VARIABLES GLOBALES ============
+//VARIABLES GLOBALES 
 extern Button btnUp;
 extern Button btnDown;
 extern Button btnOk;
 extern Button btnReset;
 
-// ============ FUNCIONES ============
+//FUNCIONES 
 void hardwareInit();
 
 // Motor
