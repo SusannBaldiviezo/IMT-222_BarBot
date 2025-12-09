@@ -2,44 +2,64 @@
 #define HARDWARE_H
 
 #include <Arduino.h>
-#include <LiquidCrystal_I2C.h>
+#include <Wire.h>
 #include "buttons.h"
 
-// ---- Pines (pensados para ESP32 30 pines en Wokwi/real) ----
+// ============ PINES BTS7960 (Motor) ============
+extern const uint8_t PIN_MOTOR_REN;
+extern const uint8_t PIN_MOTOR_LEN;
+extern const uint8_t PIN_MOTOR_RPWM;
+extern const uint8_t PIN_MOTOR_LPWM;
+
+// ============ 2 SENSORES ============
+extern const uint8_t PIN_HOME;        // Sensor HOME (posición 1)
+extern const uint8_t PIN_COUNTER;     // Único sensor contador
+
+// ============ SERVO ============
 extern const uint8_t PIN_SERVO;
-extern const uint8_t PIN_MOTOR;
-extern const uint8_t PIN_HOME;
-extern const uint8_t PIN_SLOT;
+extern const int SERVO_REST_ANGLE;
+extern const int SERVO_DISPENSE_ANGLE;
+
+// ============ BOTONES ============
 extern const uint8_t PIN_BTN_UP;
 extern const uint8_t PIN_BTN_DOWN;
 extern const uint8_t PIN_BTN_OK;
-extern const uint8_t PIN_LED_HEARTBEAT;
+extern const uint8_t PIN_BTN_RESET;
 
-// Ángulos del “servo lógico”
-extern const int SERVO_REST_ANGLE;
-extern const int SERVO_PRESS_ANGLE;
+// ============ RELÉ (FOCO 220V) ============
+extern const uint8_t PIN_RELE_FOCO;
 
-// LCD global
-extern LiquidCrystal_I2C lcd;
+// ============ LCD I2C ============
+extern const uint8_t LCD_SDA;
+extern const uint8_t LCD_SCL;
 
-// Botones globales
+// ============ VARIABLES GLOBALES ============
 extern Button btnUp;
 extern Button btnDown;
 extern Button btnOk;
+extern Button btnReset;
 
-// Inicialización completa de hardware
+// ============ FUNCIONES ============
 void hardwareInit();
 
-// Motor carrusel
-void motorOn();
-void motorOff();
+// Motor
+void motorRight(uint8_t speed);
+void motorLeft(uint8_t speed);
+void motorStop();
 
 // Finales de carrera
-bool readLimitHome();
-bool readLimitSlot();
+bool readLimitHome();           // Lectura directa
+bool readLimitCounter();        // Lectura directa
+bool readHomeSinglePulse();     // Detección de flanco bajada único
+bool readCounterSinglePulse();  // Detección de flanco bajada único
 
-// Servo manejado por PWM (sin librería Servo)
+// Servo
 void servoInit();
 void servoSetAngle(int angle);
+void servoPress();              // Nueva: función para presionar servo
+
+// Relé (foco 220V)
+void releOn();
+void releOff();
 
 #endif
