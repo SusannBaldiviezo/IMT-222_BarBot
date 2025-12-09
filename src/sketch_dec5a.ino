@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <Wire.h>               // ¡IMPORTANTE!
+#include <Wire.h>               
 #include "hardware.h"
 #include "buttons.h"
 #include "motor_control.h"
