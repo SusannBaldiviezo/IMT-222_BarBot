@@ -6,7 +6,7 @@ uint8_t currentPosition = 0;
 uint8_t targetPosition = 0;
 bool isHomed = false;
 
-const uint8_t MOTOR_SPEED = 180;  // Velocidad 0-255
+const uint8_t MOTOR_SPEED = 180;  // Velocidad 0-255 del motor
 const unsigned long MOVE_TIMEOUT_MS = 10000;  // 10 segundos
 
 // Variables internas para 2 sensores
@@ -70,12 +70,12 @@ bool goToHome() {
 // ============ IR A POSICIÓN ============
 bool goToPosition(uint8_t pos) {
   if (pos < 1 || pos > 6) {
-    Serial.println("❌ Posición inválida (1-6)");
+    Serial.println("Posición inválida (1-6)");
     return true;  // Error, salir
   }
 
   if (!isHomed) {
-    Serial.println("❌ Error: no se ha hecho homing");
+    Serial.println(" Error: no se ha hecho homing");
     return true;  // No puede moverse sin homing
   }
 
