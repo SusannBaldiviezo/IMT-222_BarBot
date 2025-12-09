@@ -26,7 +26,7 @@ void taskButtonHandler(void *pvParameters) {
   ButtonEvent btnEvent;
   unsigned long now;
   
-  Serial.println("🔄 Task ButtonHandler iniciada");
+  Serial.println("Task ButtonHandler iniciada");
   
   while(1) {
     now = millis();
