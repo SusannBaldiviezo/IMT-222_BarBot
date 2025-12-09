@@ -42,28 +42,28 @@ void taskButtonHandler(void *pvParameters) {
       btnEvent.buttonId = 1;
       btnEvent.pressed = true;
       xQueueSend(buttonQueue, &btnEvent, 0);
-      Serial.println("🔼 Botón UP presionado");
+      Serial.println("Botón UP presionado");
     }
     
     if (btnDown.pressedEvent) {
       btnEvent.buttonId = 2;
       btnEvent.pressed = true;
       xQueueSend(buttonQueue, &btnEvent, 0);
-      Serial.println("🔽 Botón DOWN presionado");
+      Serial.println("Botón DOWN presionado");
     }
     
     if (btnOk.pressedEvent) {
       btnEvent.buttonId = 3;
       btnEvent.pressed = true;
       xQueueSend(buttonQueue, &btnEvent, 0);
-      Serial.println("✅ Botón OK presionado");
+      Serial.println("Botón OK presionado");
     }
     
     if (btnReset.pressedEvent) {
       btnEvent.buttonId = 4;
       btnEvent.pressed = true;
       xQueueSend(buttonQueue, &btnEvent, 0);
-      Serial.println("🔄 Botón RESET presionado");
+      Serial.println("Botón RESET presionado");
     }
     
     vTaskDelayUntil(&xLastWakeTime, xFrequency);
@@ -75,7 +75,7 @@ void taskMotorControl(void *pvParameters) {
   MotorCommand cmd;
   LCDUpdate lcdMsg;
   
-  Serial.println("🔄 Task MotorControl iniciada");
+  Serial.println("Task MotorControl iniciada");
   
   while(1) {
     if (xQueueReceive(motorCommandQueue, &cmd, portMAX_DELAY) == pdTRUE) {
@@ -146,7 +146,7 @@ void taskMotorControl(void *pvParameters) {
             
           case 3: // STOP
             motorStop();
-            Serial.println("🛑 Motor detenido por comando");
+            Serial.println("Motor detenido por comando");
             break;
         }
       }
@@ -160,7 +160,7 @@ void taskMotorControl(void *pvParameters) {
 void taskLCDUpdate(void *pvParameters) {
   LCDUpdate lcdMsg;
   
-  Serial.println("🔄 Task LCDUpdate iniciada");
+  Serial.println("Task LCDUpdate iniciada");
   
   while(1) {
     // Procesar mensajes de actualización de LCD
@@ -227,7 +227,7 @@ void taskSystemSupervisor(void *pvParameters) {
     {4, 6, "Vodka Sprite",     "SP+VO"}
   };
   
-  Serial.println("🔄 Task SystemSupervisor iniciada");
+  Serial.println("Task SystemSupervisor iniciada");
   
   while(1) {
     // Procesar eventos de botones
