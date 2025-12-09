@@ -51,7 +51,7 @@ void loop() {
     lastReport = millis();
     
     // Reportar estado de las tareas
-    Serial.print("📊 Estado del sistema: ");
+    Serial.print("Estado del sistema: ");
     switch(currentSystemState) {
       case SYS_STATE_INIT: Serial.println("INICIO"); break;
       case SYS_STATE_HOMING: Serial.println("BUSCANDO HOME"); break;
@@ -63,13 +63,13 @@ void loop() {
       case SYS_STATE_DONE: Serial.println("TERMINADO"); break;
     }
     
-    Serial.print("🏷️  Posición actual: ");
+    Serial.print("Posición actual: ");
     Serial.print(currentPosition);
     Serial.print(" (");
     Serial.print(bebidasNombres[currentPosition]);
     Serial.println(")");
     
-    Serial.print("📊 Memoria libre: ");
+    Serial.print("Memoria libre: ");
     Serial.print(esp_get_free_heap_size());
     Serial.println(" bytes");
   }
