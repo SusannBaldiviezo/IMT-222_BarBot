@@ -39,7 +39,7 @@ void setup() {
   Serial.println("✅ Sistema listo. Presione OK para iniciar.");
 }
 
-// ============ LOOP PRINCIPAL ============ 
+// LOOP PRINCIPAL 
 void loop() {
   // Loop vacío - Todo se maneja en las tareas de FreeRTOS
   // Solo mantenemos viva la tarea IDLE
