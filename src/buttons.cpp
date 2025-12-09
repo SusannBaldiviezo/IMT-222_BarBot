@@ -24,7 +24,7 @@ void updateButton(Button &b, unsigned long now) {
   if ((now - b.lastChange) > DEBOUNCE_MS) {
     if (reading != b.stableState) {
       b.stableState = reading;
-      // Flanco de bajada = pulsación
+      // Flanco de bajada = pulsaciónnn
       if (b.stableState == LOW) {
         b.pressedEvent = true;
       }
