@@ -6,7 +6,7 @@
 // Estado del motor
 extern uint8_t currentPosition;  // Posición actual: 0 (HOME), 1-6 (botellas)
 extern uint8_t targetPosition;   // Posición objetivo
-extern bool isHomed;             // ¿Ha encontrado HOME?
+extern bool isHomed;             
 
 // Velocidad del motor (0-255)
 extern const uint8_t MOTOR_SPEED;
