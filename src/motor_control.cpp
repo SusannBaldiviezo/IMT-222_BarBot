@@ -92,7 +92,7 @@ bool calculateBestDirection(uint8_t target, uint8_t current) {
 //  IR A HOME 
 bool goToHome() {
   if (!isMoving) {
-    Serial.println("🔍 BUSCANDO HOME...");
+    Serial.println("BUSCANDO HOME...");
     isMoving = true;
     moveStartTime = millis();
     sensorActivated = false;
@@ -106,7 +106,7 @@ bool goToHome() {
     if (!sensorActivated) {
       sensorActivated = true;
       sensorActivationTime = millis();
-      Serial.println("⚠️  PULSO HOME detectado!");
+      Serial.println("  PULSO HOME detectado!");
     }
     
     if (millis() - sensorActivationTime > 10) {
@@ -129,7 +129,7 @@ bool goToHome() {
   }
 
   if (millis() - moveStartTime > MOVE_TIMEOUT_MS) {
-    Serial.println("⚠️  Timeout en homing");
+    Serial.println(" Timeout en homing");
     motorStop();
     isMoving = false;
     return true;
@@ -150,7 +150,7 @@ bool goToPosition(uint8_t pos) {
 
   if (!isMoving) {
     targetPosition = pos;
-    Serial.print("🚀 IR A POSICION: ");
+    Serial.print("IR A POSICION: ");
     Serial.print(pos);
     Serial.print(" (");
     Serial.print(bebidasNombres[pos]);
@@ -180,7 +180,7 @@ bool goToPosition(uint8_t pos) {
   // 1. DETECTAR HOME (posición 1) - PULSO ÚNICO
   if (readHomeSinglePulse()) {
     if (!sensorActivated) {
-      Serial.println("🏠 PULSO HOME detectado!");
+      Serial.println("PULSO HOME detectado!");
       motorStop();
       delay(30);
       
@@ -190,7 +190,7 @@ bool goToPosition(uint8_t pos) {
       
       // Verificar si llegó a destino
       if (targetPosition == 1) {
-        Serial.println("🎯 LLEGÓ A HOME!");
+        Serial.println(" LLEGÓ A HOME!");
         isMoving = false;
         delay(200);
         return true;
@@ -221,11 +221,11 @@ bool goToPosition(uint8_t pos) {
       if (currentDirectionForward) {
         // Vamos ADELANTE (derecha)
         newPosition = (currentPosition < 6) ? currentPosition + 1 : 1;
-        Serial.print("➕ CONTADOR (Adelante): ");
+        Serial.print(" CONTADOR (Adelante): ");
       } else {
         // Vamos ATRÁS (izquierda)
         newPosition = (currentPosition > 1) ? currentPosition - 1 : 6;
-        Serial.print("➖ CONTADOR (Atrás): ");
+        Serial.print(" CONTADOR (Atrás): ");
       }
       
       Serial.print(currentPosition);
@@ -241,7 +241,7 @@ bool goToPosition(uint8_t pos) {
       
       // Verificar si llegó al destino
       if (currentPosition == targetPosition) {
-        Serial.println("🎯 LLEGÓ AL DESTINO!");
+        Serial.println(" LLEGÓ AL DESTINO!");
         isMoving = false;
         delay(200);
         return true;
@@ -271,7 +271,7 @@ bool goToPosition(uint8_t pos) {
   
   //  VERIFICAR LLEGADA 
   if (currentPosition == targetPosition) {
-    Serial.print("🎯 LLEGÓ A POS ");
+    Serial.print("LLEGÓ A POS ");
     Serial.println(currentPosition);
     motorStop();
     isMoving = false;
@@ -281,7 +281,7 @@ bool goToPosition(uint8_t pos) {
   
   //  TIMEOUT 
   if (millis() - moveStartTime > MOVE_TIMEOUT_MS) {
-    Serial.print("⚠️  TIMEOUT en pos ");
+    Serial.print("  TIMEOUT en pos ");
     Serial.println(currentPosition);
     motorStop();
     isMoving = false;
