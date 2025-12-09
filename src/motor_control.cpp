@@ -1,7 +1,7 @@
 #include "motor_control.h"
 #include "hardware.h"
 
-// ============ NOMBRES DE BEBIDAS ============
+//  NOMBRES DE BEBIDAS 
 const char* bebidasNombres[] = {
   "",
   "COCA",     // 1
@@ -12,7 +12,7 @@ const char* bebidasNombres[] = {
   "VODKA"     // 6
 };
 
-// ============ VARIABLES ============
+//  VARIABLES 
 uint8_t currentPosition = 1;
 uint8_t targetPosition = 1;
 bool isHomed = false;
@@ -31,7 +31,7 @@ static bool sensorActivated = false;
 static unsigned long sensorActivationTime = 0;
 static bool currentDirectionForward = true;
 
-// ============ RESET ============
+//  RESET 
 void resetSystem() {
   motorStop();
   currentPosition = 1;
@@ -42,12 +42,12 @@ void resetSystem() {
   Serial.println("Sistema reseteado");
 }
 
-// ============ INICIALIZACIÓN ============
+//  INICIALIZACIÓN 
 void motorControlInit() {
   resetSystem();
 }
 
-// ============ CALCULAR MEJOR DIRECCIÓN PARA SISTEMA CIRCULAR ============
+//  CALCULAR MEJOR DIRECCIÓN PARA SISTEMA CIRCULAR 
 bool calculateBestDirection(uint8_t target, uint8_t current) {
   if (target == current) return true;
   
@@ -89,7 +89,7 @@ bool calculateBestDirection(uint8_t target, uint8_t current) {
   return (forwardDistance < backwardDistance);
 }
 
-// ============ IR A HOME ============
+//  IR A HOME 
 bool goToHome() {
   if (!isMoving) {
     Serial.println("🔍 BUSCANDO HOME...");
@@ -138,7 +138,7 @@ bool goToHome() {
   return false;
 }
 
-// ============ IR A POSICIÓN CON DETECCIÓN ÚNICA ============
+//  IR A POSICIÓN CON DETECCIÓN ÚNICA 
 bool goToPosition(uint8_t pos) {
   if (pos < 1 || pos > 6) return true;
   if (!isHomed) return true;
@@ -174,7 +174,7 @@ bool goToPosition(uint8_t pos) {
     delay(100);
   }
   
-  // ============ DETECCIÓN ÚNICA DE SENSORES ============
+  //  DETECCIÓN ÚNICA DE SENSORES 
   unsigned long now = millis();
   
   // 1. DETECTAR HOME (posición 1) - PULSO ÚNICO
@@ -269,7 +269,7 @@ bool goToPosition(uint8_t pos) {
     sensorActivated = false;
   }
   
-  // ============ VERIFICAR LLEGADA ============
+  //  VERIFICAR LLEGADA 
   if (currentPosition == targetPosition) {
     Serial.print("🎯 LLEGÓ A POS ");
     Serial.println(currentPosition);
@@ -279,7 +279,7 @@ bool goToPosition(uint8_t pos) {
     return true;
   }
   
-  // ============ TIMEOUT ============
+  //  TIMEOUT 
   if (millis() - moveStartTime > MOVE_TIMEOUT_MS) {
     Serial.print("⚠️  TIMEOUT en pos ");
     Serial.println(currentPosition);
@@ -291,7 +291,7 @@ bool goToPosition(uint8_t pos) {
   return false;
 }
 
-// ============ OBTENER DIRECCIÓN ACTUAL ============
+//  OBTENER DIRECCIÓN ACTUAL 
 bool getCurrentDirection() {
   return currentDirectionForward;
 }
