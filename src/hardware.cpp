@@ -1,6 +1,6 @@
 #include "hardware.h"
 
-// ============ DEFINICIÓN DE PINES ============
+// DEFINICIÓN DE PINES
 const uint8_t PIN_MOTOR_REN  = 18;
 const uint8_t PIN_MOTOR_LEN  = 17;
 const uint8_t PIN_MOTOR_RPWM = 15;
@@ -28,17 +28,17 @@ const uint8_t PIN_RELE_FOCO = 19;
 const uint8_t LCD_SDA = 21;
 const uint8_t LCD_SCL = 22;
 
-// ============ BOTONES GLOBALES ============
+// BOTONES GLOBALES
 Button btnUp;
 Button btnDown;
 Button btnOk;
 Button btnReset;
 
-// ============ VARIABLES PARA DETECCIÓN ÚNICA DE PULSOS ============
+// VARIABLES PARA DETECCIÓN ÚNICA DE PULSOS
 static bool sensorHomeLastState = true;    // HIGH por PULLUP
 static bool sensorCounterLastState = true; // HIGH por PULLUP
 
-// ============ INICIALIZACIÓN ============
+// INICIALIZACIÓN
 void hardwareInit() {
   Serial.begin(115200);
   Serial.println("Inicializando hardware...");
@@ -77,7 +77,7 @@ void hardwareInit() {
   Serial.println("Sistema con 2 sensores: HOME + CONTADOR");
 }
 
-// ============ MOTOR ============
+// MOTOR
 void motorRight(uint8_t speed) {
   speed = constrain(speed, 0, 255);
   ledcWrite(PIN_MOTOR_RPWM, speed);
@@ -95,7 +95,7 @@ void motorStop() {
   ledcWrite(PIN_MOTOR_LPWM, 0);
 }
 
-// ============ FINALES DE CARRERA - LECTURA DIRECTA ============
+// FINALES DE CARRERA - LECTURA DIRECTA
 bool readLimitHome() {
   return digitalRead(PIN_HOME) == LOW;
 }
@@ -104,7 +104,7 @@ bool readLimitCounter() {
   return digitalRead(PIN_COUNTER) == LOW;
 }
 
-// ============ DETECCIÓN DE PULSO ÚNICO ============
+// DETECCIÓN DE PULSO ÚNICO
 bool readHomeSinglePulse() {
   bool currentState = digitalRead(PIN_HOME);
   bool detected = false;
@@ -133,7 +133,7 @@ bool readCounterSinglePulse() {
   return detected;
 }
 
-// ============ SERVO ============
+// SERVO
 void servoInit() {
   pinMode(PIN_SERVO, OUTPUT);
   
@@ -156,7 +156,7 @@ void servoSetAngle(int angle) {
   }
 }
 
-// ============ SERVO CON PRESIÓN ============
+// SERVO CON PRESIÓN
 void servoPress() {
   Serial.println("🔘 SERVO PRESIONANDO...");
   
@@ -174,7 +174,7 @@ void servoPress() {
   Serial.println("🔘 SERVO LIBERADO");
 }
 
-// ============ RELÉ ============
+// RELÉ
 void releOn() {
   digitalWrite(PIN_RELE_FOCO, HIGH);
   Serial.println("💡 FOCO ENCENDIDO");
