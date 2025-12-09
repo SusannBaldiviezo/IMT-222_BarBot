@@ -4,7 +4,7 @@ const unsigned long DEBOUNCE_MS = 30;
 
 void initButton(Button &b, uint8_t pin) {
   b.pin = pin;
-  pinMode(pin, INPUT_PULLUP);  // activo en LOW
+  pinMode(pin, INPUT_PULLUP);  // Activo en LOW
   b.stableState = HIGH;
   b.lastReading = HIGH;
   b.pressedEvent = false;
@@ -24,7 +24,7 @@ void updateButton(Button &b, unsigned long now) {
   if ((now - b.lastChange) > DEBOUNCE_MS) {
     if (reading != b.stableState) {
       b.stableState = reading;
-      // flanco de bajada = pulsación
+      // Flanco de bajada = pulsación
       if (b.stableState == LOW) {
         b.pressedEvent = true;
       }
